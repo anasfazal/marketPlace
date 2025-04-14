@@ -1,32 +1,29 @@
 import db from '../config/db.js';
 import queries from '../config/queries.js';
 
-export const createUserTable = async () => {
-  await db.execute(queries.createTable);
+// Insert user
+export const insertUser = async (name, email, password, role, age) => {
+  await db.execute(queries.insertUser, [name, email, password, role, age]);
 };
 
-export const insertUser = async (name, age) => {
-  await db.execute(queries.insertUser, [name, age]);
+// Get user by email
+export const getUserByEmail = async (email) => {
+  const [rows] = await db.execute(queries.getUserByEmail, [email]);
+  return rows[0]; // Returns the first matching row
 };
 
-export const insertMultipleUsers = async (users) => {
-  await db.query(queries.insertMultipleUsers, [users]);
-};
-
-export const getAllUsers = async () => {
-  const [rows] = await db.execute(queries.getAllUsers);
-  return rows;
-};
-
+// Get user by ID
 export const getUserById = async (id) => {
-  const [user] = await db.execute(queries.getUserById, [id]);
-  return user;
+  const [rows] = await db.execute(queries.getUserById, [id]);
+  return rows[0]; // Returns the first matching row
 };
 
-export const updateUser = async (id, name, age) => {
-  await db.execute(queries.updateUser, [name, age, id]);
+// Update user
+export const updateUser = async (id, name, email, password, role, age) => {
+  await db.execute(queries.updateUser, [name, email, password, role, age, id]);
 };
 
+// Delete user
 export const deleteUser = async (id) => {
   await db.execute(queries.deleteUser, [id]);
 };

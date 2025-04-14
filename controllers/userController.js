@@ -1,51 +1,92 @@
+import bcrypt from 'bcrypt';
 import {
-    createUserTable,
-    insertUser,
-    insertMultipleUsers,
-    getAllUsers,
-    getUserById,
-    updateUser,
-    deleteUser,
-  } from '../models/userModel.js';
-import { HTTP_STATUS_CODES } from '../statuses.js';
-  
-  // Run once to ensure table exists
-  createUserTable();
-  
-  export const createUser = async (req, res) => {
-    const { name, age } = req.body;
-    await insertUser(name, age);
-    res.status(HTTP_STATUS_CODES.Created).json({ message: 'User added successfully' });
-  };
-  
-  export const createManyUsers = async (req, res) => {
-    const users = req.body.users; 
-    await insertMultipleUsers(users);
-    res.status(HTTP_STATUS_CODES.Created).json({ message: 'Users inserted successfully' });
-  };
-  
-  export const fetchAllUsers = async (req, res) => {
-    const users = await getAllUsers();
-    res.status(HTTP_STATUS_CODES.OK).json(users);
-  };
-  
-  export const fetchUserById = async (req, res) => {
-    const id = req.params.id;
-    const user = await getUserById(id);
-    if (user.length === 0) return res.status(404).json({ error: 'User not found' });
-    res.status(HTTP_STATUS_CODES.OK).json(user[0]);
-  };
-  
-  export const modifyUser = async (req, res) => {
-    const id = req.params.id;
-    const { name, age } = req.body;
-    await updateUser(id, name, age);
-    res.status(HTTP_STATUS_CODES.OK).json({ message: 'User updated successfully' });
-  };
-  
-  export const removeUser = async (req, res) => {
-    const id = req.params.id;
-    await deleteUser(id);
-    res.status(HTTP_STATUS_CODES.OK).json({ message: 'User deleted successfully' });
-  };
+  insertUser,
+  getUserByEmail,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from '../models/userModel.js';
+import { HTTP_STATUS_CODES } from '../utils/statusCodes.js';
 
+// Register user
+export const registerUser = async (req, res) => {
+  try {
+    const { name, email, password, role, age } = req.body;
+
+    // Check if the user already exists
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+      return res
+        .status(HTTP_STATUS_CODES.Conflict)
+        .json({ message: 'User already exists' });
+    }
+
+    // ✅ Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await insertUser(name, email, hashedPassword, role, age);
+    res
+      .status(HTTP_STATUS_CODES.Created)
+      .json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error('Register error:', error.message);
+    res
+      .status(HTTP_STATUS_CODES.InternalServerError)
+      .json({ message: 'Server error' });
+  }
+};
+
+// Get user by ID
+export const getUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await getUserById(userId);
+
+    if (!user) {
+      return res
+        .status(HTTP_STATUS_CODES.NotFound)
+        .json({ message: 'User not found' });
+    }
+
+    res.status(HTTP_STATUS_CODES.OK).json(user);
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.InternalServerError)
+      .json({ message: 'Server error' });
+  }
+};
+
+// Update user
+export const updateUserDetails = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { name, email, password, role, age } = req.body;
+
+    // ✅ Hash updated password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await updateUser(userId, name, email, hashedPassword, role, age);
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .json({ message: 'User details updated successfully' });
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.InternalServerError)
+      .json({ message: 'Server error' });
+  }
+};
+
+// Delete user
+export const deleteUserAccount = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    await deleteUser(userId);
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.InternalServerError)
+      .json({ message: 'Server error' });
+  }
+};
