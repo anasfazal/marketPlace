@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    res.send('Welcome to the Marketplace API!');
+    res.send(`Welcome to the Marketplace API This processing is running with processId  ${process.pid}`);
 });
 
 app.use('/api/auth', authLimiter, authRoutes);
