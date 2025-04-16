@@ -7,26 +7,26 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // ✅ Make sure both fields are provided
+    // Make sure both fields are provided
     if (!email || !password) {
       return res.status(HTTP_STATUS_CODES.BadRequest).json({ message: 'Email and password are required' });
     }
 
     const user = await getUserByEmail(email);
 
-    // ✅ User not found
+    // User not found
     if (!user) {
       return res.status(HTTP_STATUS_CODES.Unauthorized).json({ message: 'Invalid email or password' });
     }
 
-    // ✅ Validate password
+    // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(HTTP_STATUS_CODES.Unauthorized).json({ message: 'Invalid email or password' });
     }
 
-    // ✅ Create JWT token
+    // Create JWT token
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,

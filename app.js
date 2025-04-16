@@ -3,31 +3,40 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 
+import { globalLimiter, authLimiter } from './middleware/rateLimiter.js';
+import { errorHandler } from './middleware/errorHandler.js';
+
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
-import { errorHandler } from './middleware/errorHandler.js';
+
+import { logActivity } from './utils/logger.js';
+
 
 dotenv.config();
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
+app.use(globalLimiter);
 
 
-// Routes
+app.use((req, res, next) => {
+    logActivity(`Request: ${req.method} ${req.originalUrl} - IP: ${req.ip}`);
+    next();
+});
+
 app.get('/', (req, res) => {
     res.send('Welcome to the Marketplace API!');
 });
-app.use('/api/auth', authRoutes);
+
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
-
 
 // Error Handler
 app.use(errorHandler);
