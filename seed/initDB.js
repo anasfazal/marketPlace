@@ -1,4 +1,4 @@
-import queries from '../config/queries.js';  // Adjust the path to point to the correct location
+import queries from '../config/queries.js';  
 import bcrypt from 'bcrypt';
 import db from '../config/db.js';  
 
@@ -9,7 +9,7 @@ const seedDatabase = async () => {
     await db.query(queries.createProductsTable);
     await db.query(queries.createCartsTable);
 
-    // seed admin
+   
     const [existingAdmins] = await db.query('SELECT * FROM users WHERE role = ?', ['admin']);
 
     if (existingAdmins.length === 0) {
