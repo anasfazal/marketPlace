@@ -7,7 +7,8 @@ const queries = {
         email VARCHAR(255) UNIQUE,
         password VARCHAR(255),
         role ENUM('admin', 'seller', 'customer'),
-        age INT
+        age INT,
+        INDEX(email)
       )
     `,
   
@@ -19,7 +20,8 @@ const queries = {
         description TEXT,
         price DECIMAL(10, 2),
         seller_id INT,
-        FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE,
+        INDEX(seller_id)
       )
     `,
   
@@ -31,7 +33,9 @@ const queries = {
         product_id INT,
         quantity INT,
         FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        INDEX(customer_id),
+        INDEX(product_id)
       )
     `,
   
