@@ -1,4 +1,3 @@
-// index.js
 import cluster from 'cluster';
 import os from 'os';
 import https from 'https';
@@ -33,5 +32,6 @@ if (cluster.isPrimary) {
 
   https.createServer(sslOptions, app).listen(PORT, () => {
     console.log(`Worker ${process.pid} - HTTPS Server running at https://localhost:${PORT}`);
+
   });
 }

@@ -1,5 +1,5 @@
 const queries = {
-    // Users table
+ 
     createUsersTable: `
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -12,7 +12,7 @@ const queries = {
       )
     `,
   
-    // Products table
+
     createProductsTable: `
       CREATE TABLE IF NOT EXISTS products (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,7 +25,7 @@ const queries = {
       )
     `,
   
-    // Carts table
+
     createCartsTable: `
       CREATE TABLE IF NOT EXISTS carts (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,7 +39,7 @@ const queries = {
       )
     `,
   
-    // ------------------ User Queries ------------------
+   
     insertUser: `
       INSERT INTO users (name, email, password, role, age)
       VALUES (?, ?, ?, ?, ?)
@@ -61,7 +61,7 @@ const queries = {
       DELETE FROM users WHERE id = ?
     `,
   
-    // ------------------ Product Queries ------------------
+ 
     addProduct: `
       INSERT INTO products (name, description, price, seller_id)
       VALUES (?, ?, ?, ?)
@@ -83,7 +83,6 @@ const queries = {
       DELETE FROM products WHERE id = ?
     `,
   
-    // ------------------ Cart Queries ------------------
     addToCart: `
       INSERT INTO carts (customer_id, product_id, quantity)
       VALUES (?, ?, ?)

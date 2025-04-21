@@ -8,12 +8,11 @@ import {
 } from '../models/userModel.js';
 import { HTTP_STATUS_CODES } from '../utils/statusCodes.js';
 
-// Register user
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role, age } = req.body;
 
-    // Check if the user already exists
+  
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
       return res
@@ -21,7 +20,7 @@ export const registerUser = async (req, res) => {
         .json({ message: 'User already exists' });
     }
 
-    // ✅ Hash the password
+  
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await insertUser(name, email, hashedPassword, role, age);
@@ -36,7 +35,6 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Get user by ID
 export const getUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -56,13 +54,12 @@ export const getUser = async (req, res) => {
   }
 };
 
-// Update user
+
 export const updateUserDetails = async (req, res) => {
   try {
     const userId = req.params.id;
     const { name, email, password, role, age } = req.body;
 
-    // ✅ Hash updated password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await updateUser(userId, name, email, hashedPassword, role, age);
@@ -76,7 +73,7 @@ export const updateUserDetails = async (req, res) => {
   }
 };
 
-// Delete user
+
 export const deleteUserAccount = async (req, res) => {
   try {
     const userId = req.params.id;
