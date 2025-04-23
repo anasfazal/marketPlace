@@ -1,29 +1,66 @@
 import db from '../config/db.js';
 import queries from '../config/queries.js';
+import { HTTP_STATUS_CODES } from '../utils/statusCodes.js';
 
+export const productModel = {
+  create: async (productData) => {
+    try {
+      const [result] = await db.query(queries.insertProduct, [
+        productData.name,
+        productData.description,
+        productData.price,
+        productData.sellerId
+      ]);
+      return result.insertId;
+    } catch (error) {
+      error.status = HTTP_STATUS_CODES.InternalServerError;
+      throw error;
+    }
+  },
 
-export const addProduct = async (name, description, price, sellerId) => {
-  await db.execute(queries.addProduct, [name, description, price, sellerId]);
-};
+  findAll: async () => {
+    try {
+      const [products] = await db.query(queries.selectAllProducts);
+      return products;
+    } catch (error) {
+      error.status = HTTP_STATUS_CODES.InternalServerError;
+      throw error;
+    }
+  },
 
+  findById: async (id) => {
+    try {
+      const [product] = await db.query(queries.selectProductById, [id]);
+      return product[0] || null;
+    } catch (error) {
+      error.status = HTTP_STATUS_CODES.InternalServerError;
+      throw error;
+    }
+  },
 
-export const getAllProducts = async () => {
-  const [rows] = await db.execute(queries.getAllProducts);
-  return rows;
-};
+  update: async (id, sellerId, updates) => {
+    try {
+      const [result] = await db.query(queries.updateProduct, [
+        updates.name,
+        updates.description,
+        updates.price,
+        id,
+        sellerId
+      ]);
+      return result.affectedRows > 0;
+    } catch (error) {
+      error.status = HTTP_STATUS_CODES.InternalServerError;
+      throw error;
+    }
+  },
 
-
-export const getProductById = async (id) => {
-  const [rows] = await db.execute(queries.getProductById, [id]);
-  return rows[0];
-};
-
-
-export const updateProduct = async (id, name, description, price) => {
-  await db.execute(queries.updateProduct, [name, description, price, id]);
-};
-
-
-export const deleteProduct = async (id) => {
-  await db.execute(queries.deleteProduct, [id]);
+  delete: async (id, sellerId) => {
+    try {
+      const [result] = await db.query(queries.deleteProduct, [id, sellerId]);
+      return result.affectedRows > 0;
+    } catch (error) {
+      error.status = HTTP_STATUS_CODES.InternalServerError;
+      throw error;
+    }
+  }
 };

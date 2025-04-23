@@ -33,12 +33,14 @@ app.get('/', (req, res) => {
     res.send(`Welcome to the Marketplace API This processing is running with processId  ${process.pid}`);
 });
 
-app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/users', userRoutes);
+
+
+
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
 
-// Error Handler
 app.use(errorHandler);
 
 export default app;

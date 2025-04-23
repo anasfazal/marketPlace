@@ -1,20 +1,39 @@
 import express from 'express';
-import {
-  addNewProduct,
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { 
+  createProduct,
   getProducts,
   getProduct,
-  updateProductDetails,
-  deleteProductById
+  updateProduct,
+  deleteProduct
 } from '../controllers/productController.js';
-import { verifyToken, isSeller } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/', getProducts);
-router.get('/:id', getProduct);
+router.get('/', asyncHandler(getProducts));
+router.get('/:id', asyncHandler(getProduct));
 
-router.post('/', verifyToken, isSeller, addNewProduct);
-router.put('/:id', verifyToken, isSeller, updateProductDetails);
-router.delete('/:id', verifyToken, isSeller, deleteProductById);
+
+router.post(
+  '/',
+  asyncHandler(authenticate),
+  asyncHandler(authorize('seller')),
+  asyncHandler(createProduct)
+);
+
+router.put(
+  '/:id',
+  asyncHandler(authenticate),
+  asyncHandler(authorize('seller')),
+  asyncHandler(updateProduct)
+);
+
+router.delete(
+  '/:id',
+  asyncHandler(authenticate),
+  asyncHandler(authorize('seller')),
+  asyncHandler(deleteProduct)
+);
 
 export default router;
