@@ -1,5 +1,6 @@
 import express from 'express';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { cacheMiddleware } from '../middleware/cache.js';
 import { 
   createProduct,
   getProducts,
@@ -11,9 +12,15 @@ import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/', asyncHandler(getProducts));
-router.get('/:id', asyncHandler(getProduct));
+router.get('/', 
+  cacheMiddleware('products'),
+  asyncHandler(getProducts)
+);
 
+router.get('/:id',
+  cacheMiddleware('product'),
+  asyncHandler(getProduct)
+);
 
 router.post(
   '/',

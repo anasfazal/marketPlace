@@ -7,6 +7,7 @@ import {
   removeFromCart
 } from '../controllers/cartController.js';
 import { authenticate, authorize } from '../middleware/auth.js';
+import { cacheMiddleware } from '../middleware/cache.js';
 
 const router = express.Router();
 
@@ -16,7 +17,10 @@ router.use(
 );
 
 router.post('/', asyncHandler(addToCart));
-router.get('/', asyncHandler(getCart));
+router.get('/', 
+  cacheMiddleware('cart'),
+  asyncHandler(getCart)
+);
 router.put('/:productId', asyncHandler(updateCartItem));
 router.delete('/:productId', asyncHandler(removeFromCart));
 
